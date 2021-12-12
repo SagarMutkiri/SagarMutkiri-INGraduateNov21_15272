@@ -1,0 +1,32 @@
+
+
+body{
+   
+    width: 60%;
+  margin: 0px;
+    padding: 50px 0px 50px 270px;
+    background-color: antiquewhite;
+
+}
+#phead{
+    margin-bottom: 5px;
+}
+
+#pcontent{
+    margin: 0px;
+    padding-left: 30px;
+}
+
+#toaddress{ 
+    text-align: right;
+
+}
+
+#fromaddress{
+    
+}
+
+#signature
+{
+ 
+}
