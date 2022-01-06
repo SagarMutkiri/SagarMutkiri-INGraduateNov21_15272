@@ -1,0 +1,18 @@
+Assignment02_Week3
+Create express server to server below solutions:
+
+Method URL resp.send()
+
+GET / resp.send("CALLED :GET")
+POST / resp.send("CALLED :POST")
+PUT / resp.send("CALLED :PUT")
+DELETE / resp.send("CALLED :DELETE")
+
+
+Assignment04_Week3
+Method URL resp.sendFile()
+GET / index.html =>title:"Home page" form mentioned below
+Post /register success.html=> Welcome!
+Post /register error.html => Error!
+a.Index.html
+form{action:"register",method:"post"}=> FirstName and last name
