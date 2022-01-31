@@ -1,0 +1,218 @@
+============================================================app.module.ts=====================================================
+  
+ declarations: [
+    AppComponent,
+    HeaderComponent,
+    SearchComponent,
+    ProductComponent,
+    CartComponent,
+  ],
+imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    MatCardModule,
+    HttpClientModule,
+    FormsModule,
+  ],
+
+
+
+============================================product.component.css======================================================
+
+.example-card {
+  max-width: 65%;
+  border: solid 2px;
+}
+
+/* .card-group{
+
+} */
+
+.example-header-image {
+  background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+  background-size: cover;
+}
+
+.card button{
+  width: 80%;
+  margin-left: 20px;
+  margin-top: 10px;
+  position:static;
+}
+
+.card{
+  padding: 5px 10px 5px 10px;
+  margin: 50px;
+  /* background-color: greenyellow; */
+  border: solid 1px black;
+  display: inline;
+  width: 23%;
+}
+
+.card img{
+  width: 80%;
+  height: 45%;
+  margin-left: 0px 0px 15px 5px;
+  margin-right: 0px;
+  padding-left: 25px;
+  transition: 0.3s ease-in-out;
+  position:relative;
+
+}
+
+.card img:hover{
+  transition: 0.3s ease-in-out;
+  transform: scale(1.1);
+}
+
+
+
+============================================product.component.html======================================================
+
+
+<br>
+<br>
+<br>
+<br>
+<div class="card-top container-fluid">
+</div>
+
+
+<div class="container-fluid">
+  <div class="row">
+
+    <ng-container *ngFor="let item of productList">
+    <div class="card col-3">
+        <img src="{{item.image}}" alt="ProductListImage">
+        <h3><strong>Title : </strong>{{item.title}}</h3>
+        <p ><strong>Category : </strong>{{item.category}}</p>
+        <p style="white-space: nowrap; overflow: hidden;text-overflow: ellipsis;max-width: 100ch;"><strong>Description : </strong>{{item.description}}</p>
+        <p><strong>Price : </strong>{{item.price|currency : 'INR'}}</p>
+        <!-- <p><strong>Quantity : </strong> <input type="number" style="width:20%" id="quantity" [(ngModel)]="cartitem.quantity" min="1" max="3"> /Kg</p> -->
+      <span>Quantity : </span><select name="pQuantity" [(ngModel)]="pQuantity" id="" class="form-control" style="width: 25%;" >
+          <option selected value="select" disabled class="text-primary">Select min - 1 | max - 5 </option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+      </select>
+        <button class="btn btn-success" (click)=addtocart(item,pQuantity)>Add to cart</button>
+    </div>
+  </ng-container>
+  </div>
+</div>
+
+============================================product.component.ts======================================================
+
+import { Component, Input, OnInit } from '@angular/core';
+import { ApiService } from 'src/app/services/api.service';
+import { CartService } from 'src/app/services/cart.service';
+
+@Component({
+  selector: 'app-product',
+  templateUrl: './product.component.html',
+  styleUrls: ['./product.component.css']
+})
+
+export class ProductComponent implements OnInit {
+
+//property to store all the product list data comming from api /productlist
+  public productList : any ;
+
+  pQuantity:any;
+
+// To inject api service that is crreated
+  constructor(private api : ApiService, private  cartService : CartService) { }
+
+
+  ngOnInit(): void {
+    this.api.getProduct()
+        .subscribe(resp=>{
+          //to store resp data comming from api
+          this.productList = resp ;
+
+      this.productList.forEach((a:any) => {
+        Object.assign(a,{quantity:1,total:a.price})
+      });
+    })
+  }
+
+  addtocart(item: any,pQuantity:number){
+    this.cartService.addtoCart(item,pQuantity);
+  }
+
+}
+
+============================================product.component.ts======================================================
+
+import { Component, Input, OnInit } from '@angular/core';
+import { ApiService } from 'src/app/services/api.service';
+import { CartService } from 'src/app/services/cart.service';
+
+@Component({
+  selector: 'app-product',
+  templateUrl: './product.component.html',
+  styleUrls: ['./product.component.css']
+})
+
+export class ProductComponent implements OnInit {
+
+//property to store all the product list data comming from api /productlist
+  public productList : any ;
+
+  pQuantity:any;
+
+// To inject api service that is crreated
+  constructor(private api : ApiService, private  cartService : CartService) { }
+
+
+  ngOnInit(): void {
+    this.api.getProduct()
+        .subscribe(resp=>{
+          //to store resp data comming from api
+          this.productList = resp ;
+
+      this.productList.forEach((a:any) => {
+        Object.assign(a,{quantity:1,total:a.price})
+      });
+    })
+  }
+
+  addtocart(item: any,pQuantity:number){
+    this.cartService.addtoCart(item,pQuantity);
+  }
+
+}
+
+============================================api.service.ts======================================================
+
+
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { map } from 'rxjs/operators';
+
+@Injectable({
+  providedIn: 'root'
+})
+
+export class ApiService {
+
+    constructor(private http : HttpClient) { }
+
+// Method to call all products from productlist web API
+    getProduct(){
+          return this.http.get<any>("http://localhost:3000/app/productlists")
+          .pipe(map((resp:any)=>{
+            return resp;
+          }))
+        }
+
+}
+
+
+
+
+
+

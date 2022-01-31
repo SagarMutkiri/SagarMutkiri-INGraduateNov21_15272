@@ -1,0 +1,227 @@
+
+============================================cart.component.css======================================================
+
+.card{
+  height:60vh;
+  margin:25px;
+  padding: 25px;
+}
+
+#emptyCart{
+border: 0px;
+}
+
+.center{
+  position:absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.center img{
+  text-decoration: none;
+  color: inherit;
+  border: none;
+  outline: none;
+  height: 162px;
+  width: 250px;
+  margin: 20px 0px;
+}
+
+.card-table{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: none;
+  word-wrap: break-word;
+  background-color: #fff;
+  background-clip: border-box;
+  border: 1px solid rgba(0,0,0,0) ;
+  border-radius: .25rem;
+}
+
+.center .btn{
+  font-size: 14px !important;
+  margin-top: 20px !important;
+  font-weight: 400;
+  padding: 12px 72px;
+  border-radius: 3px !important;
+
+}
+
+
+============================================cart.component.html======================================================
+
+
+
+<br>
+<br>
+<br>
+<br>
+
+<ng-container *ngIf="products.length !=0">
+  <div class="container">
+    <div class="card-table">
+      <div class="class cart-product">
+        <table class="table table-responsive">
+          <thead>
+            <tr>
+              <th>Sr.No</th>
+              <th>Product Name</th>
+              <th>Product Image</th>
+              <th>Description</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <!-- <th>Total</th> -->
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of products; let i = index">
+              <td>{{i+1}}</td>
+              <td>{{item.product.title}}</td>
+              <td><img style="width: 120px;" src="{{item.product.image}}" alt=""></td>
+              <td style="width:25%;">{{item.product.description}}</td>
+              <td style="width:12%;">{{item.product.price}}</td>
+              <td style="width:12%;">{{item.quantity}}</td>
+              <!-- <td style="width:12%;">{{item.total}}</td> -->
+              <td>
+                <button (click)="removeItem(item)" class="btn btn-danger"><i class="fas fa-trash-alt"></i></button>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="4"></td>
+              <td><button (click)="emptycart()" class="btn btn-danger">Empty Cart</button></td>
+              <td><button routerLink="/products" class="btn btn-primary">Shop More</button></td>
+              <td><button class="btn btn-success">Checkout</button></td>
+              <td><strong>Grand Total {{grandtotal}} Rs</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="products.length == 0">
+  <div class="container">
+    <div class="card" id="emptyCart">
+    </div>
+    <div class="center">
+      <img src="../../../assets/images/home-img.png" style="width: 50%; height: 50%;"alt="">
+      <h1>Your cart is empty!</h1>
+      <!-- <h3>Add item to it now</h3> -->
+      <button routerLink="/products" class="btn btn-success">Add item to Cart</button>
+
+    </div>
+  </div>
+</ng-container>
+
+
+
+============================================cart.component.ts======================================================
+
+
+import { Component, OnInit } from '@angular/core';
+import { CartService } from 'src/app/services/cart.service';
+
+@Component({
+  selector: 'app-cart',
+  templateUrl: './cart.component.html',
+  styleUrls: ['./cart.component.css']
+})
+export class CartComponent implements OnInit {
+
+  public products : any[] = [];
+  public grandtotal : number = 0 ;
+  constructor(private cartService : CartService) { }
+
+  ngOnInit(): void {
+    this.cartService.getProducts()
+    .subscribe((res:any)=>{
+      this.products = res;
+      this.grandtotal = this.cartService.getTotalPrice();
+    })
+  }
+  removeItem(item : any){
+    // console.log(item);
+    this.cartService.removeCartItem(item);
+    // console.log(item);
+  }
+
+  emptycart(){
+    this.cartService.removeAllCart();
+  }
+
+}
+
+
+
+============================================cart.service.ts======================================================
+
+
+
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+
+export class CartService {
+
+  public cartItemList : any = [];
+  public productList = new BehaviorSubject<any>([]);
+
+  constructor() { }
+
+  getCartList(){
+    return this.cartItemList.asObservable();
+  }
+
+  getProducts(){
+    return this.productList.asObservable();
+  }
+
+  setProduct(product : any){
+    this.cartItemList.push(...product);
+    // to emit data
+    this.productList.next(product);
+  }
+
+  addtoCart(product : any,pQuantity:number){
+    const _product={product:product,quantity:pQuantity};
+    this.cartItemList.push(_product);
+    this.productList.next(this.cartItemList);
+    this.getTotalPrice();
+  }
+
+  getTotalPrice() : number{
+    let grandTotal = 0;
+    this.cartItemList.map((a:any)=>{
+      const q:number=parseInt(a.quantity);
+        grandTotal += a.product.total*q;
+    })
+    return grandTotal;
+  }
+  removeCartItem(product : any){
+    this.cartItemList.map((a:any, index:any)=>{
+      if(product.id===a.id){
+        this.cartItemList.splice(index,1);
+      }
+    })
+    this.productList.next(this.cartItemList)
+  }
+
+  removeAllCart(){
+    this.cartItemList = []
+    this.productList.next(this.cartItemList);
+  }
+
+}
+
+
+function quantity(a: any, quantity: any): number {
+  throw new Error('Function not implemented.');
+}
