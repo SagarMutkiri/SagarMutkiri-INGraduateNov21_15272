@@ -1,0 +1,46 @@
+div{
+    background-color:white;
+    text-align: center;
+    padding: 5px;
+    color: white;
+}
+
+nav{
+    background-color: white;
+    display: block;
+    text-align: center;
+    color: black;
+    padding: 20px;
+    color: white;
+}
+
+.nav.navbar-nav.navbar-right li  {
+    color: white;
+}
+
+#navbar-nav{
+    color:white;
+}
+
+.nav-link{
+    color:white;
+}
+
+.navbar-light .navbar-brand {
+    color: white;
+}
+
+li{
+    color: white;
+}
+
+#searchbtn{
+    background-color:  #ffa64d;
+}
+
+a{
+    color: white;
+}
+
+
+
